@@ -1,0 +1,298 @@
+@model OrderCreateViewModel
+@{
+    ViewData["Title"] = "Siparis Olustur";
+}
+
+<h2>Siparis Olustur</h2>
+
+@if (TempData["Success"] is string successMessage)
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+@if (TempData["Error"] is string errorMessage)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<form asp-action="AddToCart" method="post" class="row g-3 mb-4">
+    <h5>Sepete Urun Ekle</h5>
+    <div class="col-md-4">
+        <label class="form-label">Musteri</label>
+        @if (ViewBag.LockedToSessionCustomer == true)
+        {
+            <select class="form-select" disabled>
+                @foreach (var c in Model.Customers)
+                {
+                    if (Model.CustomerId.ToString() == c.Value)
+                    {
+                        <option selected>@c.Text</option>
+                    }
+                }
+            </select>
+            <input type="hidden" name="customerId" value="@Model.CustomerId" />
+        }
+        else
+        {
+            <select id="addToCartCustomer" name="customerId" class="form-select" required>
+                <option value="">Musteri seciniz</option>
+                @foreach (var c in Model.Customers)
+                {
+                    if (Model.CustomerId.ToString() == c.Value)
+                    {
+                        <option value="@c.Value" selected>@c.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@c.Value">@c.Text</option>
+                    }
+                }
+            </select>
+        }
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Restoran</label>
+        <select id="addToCartRestaurant" name="restaurantId" class="form-select" required>
+            <option value="">Restoran seciniz</option>
+            @foreach (var r in Model.Restaurants)
+            {
+                if (Model.RestaurantId.ToString() == r.Value)
+                {
+                    <option value="@r.Value" selected>@r.Text</option>
+                }
+                else
+                {
+                    <option value="@r.Value">@r.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Kurye</label>
+        <select name="courierId" class="form-select">
+            <option value="">Kurye seciniz (opsiyonel)</option>
+            @foreach (var c in Model.Couriers)
+            {
+                if (Model.CourierId?.ToString() == c.Value)
+                {
+                    <option value="@c.Value" selected>@c.Text</option>
+                }
+                else
+                {
+                    <option value="@c.Value">@c.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Urun</label>
+        <select id="addToCartProduct" name="productId" class="form-select" required>
+            <option value="">Urun seciniz</option>
+            @foreach (var p in Model.Products)
+            {
+                <option value="@p.Value">@p.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Adet</label>
+        <input id="addToCartQuantity" name="quantity" type="number" min="1" value="1" class="form-control" required />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-order w-100">Sepete Ekle</button>
+    </div>
+</form>
+
+<div class="feature-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">Sepet</h5>
+        <form asp-action="ClearCart" method="post">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Sepeti Temizle</button>
+        </form>
+    </div>
+
+    @if (Model.CartItems.Count == 0)
+    {
+        <p class="text-muted mb-0">Sepette urun yok.</p>
+    }
+    else
+    {
+        <table class="table table-striped mb-2">
+            <thead>
+                <tr>
+                    <th>Urun</th>
+                    <th>Restoran</th>
+                    <th>Adet</th>
+                    <th>Birim Fiyat</th>
+                    <th>Tutar</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.CartItems)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.RestaurantName</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitPrice.ToString("0.00") TL</td>
+                        <td>@item.LineTotal.ToString("0.00") TL</td>
+                        <td class="text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <form asp-action="ChangeCartQuantity" method="post">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="hidden" name="delta" value="-1" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">-</button>
+                                </form>
+                                <form asp-action="ChangeCartQuantity" method="post">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <input type="hidden" name="delta" value="1" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary">+</button>
+                                </form>
+                                <form asp-action="RemoveFromCart" method="post">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Cikar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="text-end">
+            <strong>Ara Toplam: @Model.CartSubtotal.ToString("0.00") TL</strong>
+        </div>
+    }
+</div>
+
+<form asp-action="Create" method="post" class="row g-3">
+    <h5>Onay ve Teslimat</h5>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="ProductId" />
+    <input type="hidden" asp-for="Quantity" value="1" />
+    <div class="col-md-4">
+        <label asp-for="CustomerId" class="form-label"></label>
+        @if (ViewBag.LockedToSessionCustomer == true)
+        {
+            <select class="form-select" disabled>
+                @foreach (var c in Model.Customers)
+                {
+                    if (Model.CustomerId.ToString() == c.Value)
+                    {
+                        <option selected>@c.Text</option>
+                    }
+                }
+            </select>
+            <input type="hidden" asp-for="CustomerId" />
+        }
+        else
+        {
+            <select asp-for="CustomerId" asp-items="Model.Customers" class="form-select">
+                <option value="">Musteri seciniz</option>
+            </select>
+        }
+        <span asp-validation-for="CustomerId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="RestaurantId" class="form-label"></label>
+        @if (Model.CartItems.Count > 0)
+        {
+            <select class="form-select" disabled>
+                @foreach (var r in Model.Restaurants)
+                {
+                    if (Model.RestaurantId.ToString() == r.Value)
+                    {
+                        <option selected>@r.Text</option>
+                    }
+                }
+            </select>
+            <input type="hidden" asp-for="RestaurantId" />
+        }
+        else
+        {
+            <select asp-for="RestaurantId" asp-items="Model.Restaurants" class="form-select">
+                <option value="">Restoran seciniz</option>
+            </select>
+        }
+        <span asp-validation-for="RestaurantId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="CourierId" class="form-label"></label>
+        <select asp-for="CourierId" asp-items="Model.Couriers" class="form-select">
+            <option value="">Kurye seciniz (opsiyonel)</option>
+        </select>
+        <span asp-validation-for="CourierId" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="DeliveryAddress" class="form-label"></label>
+        <input asp-for="DeliveryAddress" class="form-control" />
+        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+    </div>
+    <div class="col-12 form-check">
+        <input asp-for="UseAskidaBalance" class="form-check-input" />
+        <label asp-for="UseAskidaBalance" class="form-check-label"></label>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Siparisi Gonder</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const restaurantSelect = document.getElementById("addToCartRestaurant");
+        const productSelect = document.getElementById("addToCartProduct");
+        const quantityInput = document.getElementById("addToCartQuantity");
+        const customerSelect = document.getElementById("addToCartCustomer");
+        const checkoutCustomer = document.getElementById("CustomerId");
+        const checkoutCourier = document.getElementById("CourierId");
+
+        async function loadProductsByRestaurant(restaurantId) {
+            if (!restaurantId) {
+                productSelect.innerHTML = '<option value="">Urun seciniz</option>';
+                return;
+            }
+
+            const response = await fetch(`/Orders/ProductsByRestaurant?restaurantId=${restaurantId}`);
+            if (!response.ok) {
+                return;
+            }
+
+            const products = await response.json();
+            productSelect.innerHTML = '<option value="">Urun seciniz</option>';
+            products.forEach(p => {
+                const option = document.createElement("option");
+                option.value = p.id;
+                option.textContent = p.name;
+                option.dataset.stock = p.stock;
+                productSelect.appendChild(option);
+            });
+            updateQuantityLimit();
+        }
+
+        function updateQuantityLimit() {
+            const selected = productSelect.options[productSelect.selectedIndex];
+            const stock = Number(selected?.dataset?.stock ?? 1);
+            quantityInput.max = stock > 0 ? stock : 1;
+            if (Number(quantityInput.value) > Number(quantityInput.max)) {
+                quantityInput.value = quantityInput.max;
+            }
+        }
+
+        restaurantSelect.addEventListener("change", (e) => loadProductsByRestaurant(e.target.value));
+        productSelect.addEventListener("change", updateQuantityLimit);
+
+        if (checkoutCustomer && customerSelect) {
+            customerSelect.value = checkoutCustomer.value;
+        }
+        if (checkoutCourier) {
+            const addCourier = document.querySelector('select[name="courierId"]');
+            if (addCourier) {
+                addCourier.value = checkoutCourier.value;
+            }
+        }
+
+        if (restaurantSelect.value) {
+            loadProductsByRestaurant(restaurantSelect.value);
+        }
+    </script>
+}

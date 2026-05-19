@@ -1,0 +1,66 @@
+@model IEnumerable<VTYS_PROJE.Models.restaurant_review>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Puan ve Yorumlar";
+    var restaurants = ViewBag.Restaurants as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+    var selectedId = ViewBag.SelectedRestaurantId?.ToString();
+}
+
+<h2>Restoran Puan ve Yorumlari</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-6">
+        <select name="restaurantId" class="form-select">
+            <option value="">Tum restoranlar</option>
+            @foreach (var r in restaurants)
+            {
+                if (selectedId == r.Value)
+                {
+                    <option value="@r.Value" selected>@r.Text</option>
+                }
+                else
+                {
+                    <option value="@r.Value">@r.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filtrele</button>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tarih</th>
+            <th>Restoran</th>
+            <th>Musteri</th>
+            <th>Puan</th>
+            <th>Yorum</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.created_at.ToString("g")</td>
+                <td>@r.restaurant.restaurant_name</td>
+                <td>@r.customer.full_name</td>
+                <td>@r.rating / 5</td>
+                <td>@r.comment</td>
+                <td>
+                    <form asp-action="Deactivate" asp-route-id="@r.review_id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Pasif Yap</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henuz yorum yok.</div>
+}

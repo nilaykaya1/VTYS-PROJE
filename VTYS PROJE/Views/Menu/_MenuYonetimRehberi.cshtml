@@ -1,0 +1,20 @@
+@{
+    var isYonetici = ViewBag.IsYonetici == true;
+    var restaurantId = ViewBag.RestaurantId as long?;
+}
+
+@if (isYonetici)
+{
+    <div class="feature-card mt-4">
+        <h4 class="mb-3">Menu Yonetimi</h4>
+        <p class="text-muted small mb-3">Restoran ve menuye yemek ekleme islemleri.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-sm btn-primary" asp-controller="Restaurants" asp-action="Create">+ Yeni Restoran Ekle</a>
+            <a class="btn btn-sm btn-primary" asp-controller="Products" asp-action="Create">+ Menuye Yemek Ekle</a>
+            @if (restaurantId.HasValue)
+            {
+                <a class="btn btn-sm btn-order" asp-controller="Products" asp-action="Create">Bu Restorana Yemek Ekle</a>
+            }
+        </div>
+    </div>
+}

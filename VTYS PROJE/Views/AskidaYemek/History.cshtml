@@ -1,0 +1,68 @@
+@model AskidaYemekHistoryViewModel
+@{
+    ViewData["Title"] = "Askida Gecmis";
+}
+
+<h2>Askida Yemek Gecmisi</h2>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <div class="alert alert-info mb-0">Mevcut Bakiye: <strong>@Model.PoolBalance.ToString("0.00") TL</strong></div>
+    </div>
+    <div class="col-md-4">
+        <div class="alert alert-success mb-0">Toplam Bagis: <strong>@Model.TotalDonated.ToString("0.00") TL</strong></div>
+    </div>
+    <div class="col-md-4">
+        <div class="alert alert-warning mb-0">Toplam Kullanilan: <strong>@Model.TotalUsed.ToString("0.00") TL</strong></div>
+    </div>
+</div>
+
+<h4>Son Bagislar</h4>
+<table class="table table-striped mb-4">
+    <thead>
+        <tr>
+            <th>Tarih</th>
+            <th>Musteri</th>
+            <th>Tur</th>
+            <th>Tutar</th>
+            <th>Not</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model.Donations)
+        {
+            <tr>
+                <td>@d.created_at.ToString("g")</td>
+                <td>@(d.is_anonymous ? "Anonim" : d.donor_customer.full_name)</td>
+                <td>@d.donation_type</td>
+                <td>@d.amount.ToString("0.00") TL</td>
+                <td>@d.note</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Son Kullanimlar</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tarih</th>
+            <th>Faydalanan Musteri</th>
+            <th>Siparis ID</th>
+            <th>Tutar</th>
+            <th>Durum</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model.Redemptions)
+        {
+            <tr>
+                <td>@r.created_at.ToString("g")</td>
+                <td>@r.beneficiary_customer.full_name</td>
+                <td>@r.order_id</td>
+                <td>@r.amount_used.ToString("0.00") TL</td>
+                <td>@r.status</td>
+            </tr>
+        }
+    </tbody>
+</table>

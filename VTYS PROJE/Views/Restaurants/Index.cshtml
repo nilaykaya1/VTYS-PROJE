@@ -1,0 +1,43 @@
+@model IEnumerable<VTYS_PROJE.Models.restaurant>
+@{
+    ViewData["Title"] = "Restoranlar";
+    var isYonetici = ViewBag.IsYonetici == true;
+}
+
+<h2>Restoran Listesi</h2>
+@if (TempData["Success"] is string successMessage)
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+@if (isYonetici)
+{
+    <a class="btn btn-primary mb-3" asp-action="Create">Yeni Restoran</a>
+}
+<div class="row g-3">
+    @foreach (var restaurant in Model)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@restaurant.restaurant_name</h5>
+                    <p class="card-text mb-1"><strong>Mutfak:</strong> @restaurant.cuisine_type</p>
+                    <p class="card-text mb-1"><strong>Puan:</strong> @restaurant.rating.ToString("0.0") / 5</p>
+                    <p class="card-text"><strong>Telefon:</strong> @restaurant.phone</p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a class="btn btn-outline-primary btn-sm"
+                           asp-controller="Menu"
+                           asp-action="Index"
+                           asp-route-restaurantId="@restaurant.restaurant_id">Menu ve Yorumlar</a>
+                        @if (isYonetici)
+                        {
+                            <a class="btn btn-outline-secondary btn-sm" asp-action="Edit" asp-route-id="@restaurant.restaurant_id">Duzenle</a>
+                            <form asp-action="Deactivate" asp-route-id="@restaurant.restaurant_id" method="post">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Pasif Yap</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

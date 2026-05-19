@@ -1,0 +1,32 @@
+@model IEnumerable<VTYS_PROJE.Models.restaurant>
+@{
+    ViewData["Title"] = "Menuler";
+}
+
+<h2>Restoran Menuleri</h2>
+<p class="text-muted mb-4">Menuyu gormek istediginiz restorani secin.</p>
+
+<div class="row g-3">
+    @foreach (var restaurant in Model)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 feature-card">
+                <div class="card-body">
+                    <h5 class="card-title">@restaurant.restaurant_name</h5>
+                    <p class="card-text mb-1"><strong>Mutfak:</strong> @restaurant.cuisine_type</p>
+                    <p class="card-text mb-1"><strong>Puan:</strong> @restaurant.rating.ToString("0.0") / 5</p>
+                    <a class="btn btn-order btn-sm mt-2"
+                       asp-action="Index"
+                       asp-route-restaurantId="@restaurant.restaurant_id">Menuyu Gor</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henuz aktif restoran bulunmuyor.</div>
+}
+
+<partial name="_MenuYonetimRehberi" />

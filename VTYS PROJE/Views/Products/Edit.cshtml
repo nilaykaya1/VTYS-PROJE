@@ -1,0 +1,40 @@
+@model VTYS_PROJE.Models.product
+@{
+    ViewData["Title"] = "Urun Duzenle";
+}
+
+<h2>Urun Duzenle</h2>
+
+<form asp-action="Edit" asp-route-id="@Model.product_id" method="post" class="row g-3">
+    <input type="hidden" asp-for="product_id" />
+    <input type="hidden" asp-for="created_at" />
+    <input type="hidden" asp-for="is_active" />
+    <div class="col-md-6">
+        <label asp-for="product_name" class="form-label"></label>
+        <input asp-for="product_name" class="form-control" data-input="letters" maxlength="120"
+               pattern="@InputValidation.LettersOnlyPattern" title="@InputValidation.LettersOnlyMessage" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="restaurant_id" class="form-label"></label>
+        <select asp-for="restaurant_id" asp-items="ViewBag.Restaurants" class="form-select"></select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="category_id" class="form-label"></label>
+        <select asp-for="category_id" asp-items="ViewBag.Categories" class="form-select"></select>
+    </div>
+    <div class="col-12">
+        <label asp-for="description" class="form-label"></label>
+        <textarea asp-for="description" class="form-control"></textarea>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="unit_price" class="form-label"></label>
+        <input asp-for="unit_price" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="stock_qty" class="form-label"></label>
+        <input asp-for="stock_qty" class="form-control" />
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Guncelle</button>
+    </div>
+</form>

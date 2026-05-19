@@ -1,0 +1,53 @@
+@using VTYS_PROJE.Models
+@{
+    var reviews = ViewBag.Reviews as List<restaurant_review> ?? new List<restaurant_review>();
+    var restaurantId = (long?)ViewBag.RestaurantId;
+    var rating = ViewBag.RestaurantRating as decimal? ?? 0m;
+    var reviewCount = (int)(ViewBag.ReviewCount ?? 0);
+    var isCustomer = ViewBag.IsCustomer == true;
+    var hasReview = ViewBag.CustomerHasReview == true;
+}
+
+<div class="feature-card mt-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+            <h4 class="mb-0">Puan ve Yorumlar</h4>
+            <p class="text-muted small mb-0">
+                Ortalama: <strong>@rating.ToString("0.0")</strong> / 5
+                (@reviewCount yorum)
+            </p>
+        </div>
+        @if (isCustomer && restaurantId.HasValue)
+        {
+            <a class="btn btn-sm btn-order"
+               asp-controller="Reviews"
+               asp-action="Create"
+               asp-route-restaurantId="@restaurantId.Value">
+                @(hasReview ? "Yorumu Guncelle" : "Puan Ver ve Yorum Yaz")
+            </a>
+        }
+        else if (!isCustomer)
+        {
+            <span class="text-muted small">Yorum yazmak icin <a asp-controller="Account" asp-action="Login">musteri girisi</a> yapin.</span>
+        }
+    </div>
+
+    @if (reviews.Count == 0)
+    {
+        <p class="text-muted mb-0">Bu restoran icin henuz yorum yok. Ilk yorumu siz yazin.</p>
+    }
+    else
+    {
+        @foreach (var review in reviews)
+        {
+            <div class="border rounded p-3 mb-2">
+                <div class="d-flex justify-content-between flex-wrap gap-1">
+                    <strong>@review.customer.full_name</strong>
+                    <span class="text-warning">@string.Concat(Enumerable.Repeat("★", (int)review.rating))@string.Concat(Enumerable.Repeat("☆", 5 - (int)review.rating))</span>
+                </div>
+                <p class="mb-1 mt-2">@review.comment</p>
+                <small class="text-muted">@review.created_at.ToString("dd.MM.yyyy HH:mm")</small>
+            </div>
+        }
+    }
+</div>

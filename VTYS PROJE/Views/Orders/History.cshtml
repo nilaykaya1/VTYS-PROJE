@@ -1,0 +1,98 @@
+@model IEnumerable<VTYS_PROJE.Models.order>
+@{
+    ViewData["Title"] = "Siparis Gecmisi";
+    var isYonetici = ViewBag.IsAdminView == true;
+}
+
+@if (TempData["Success"] is string successMessage)
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+@if (TempData["Error"] is string errorMessage)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<h2>@(isYonetici ? "Tum Siparisler" : "Siparislerim")</h2>
+@if (ViewBag.LockedToSessionCustomer == true)
+{
+    <div class="alert alert-info">Giris yapan musteriye gore siparisler listeleniyor.</div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tarih</th>
+            @if (isYonetici)
+            {
+                <th>Musteri</th>
+            }
+            <th>Restoran</th>
+            <th>Durum</th>
+            <th>Tutar</th>
+            <th>Askida</th>
+            <th>Urunler</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var o in Model)
+        {
+            <tr>
+                <td>@o.order_date.ToString("g")</td>
+                @if (isYonetici)
+                {
+                    <td>@o.customer.full_name</td>
+                }
+                <td>@o.restaurant.restaurant_name</td>
+                <td>@o.status</td>
+                <td>@o.total_amount.ToString("0.00") TL</td>
+                <td>@o.askida_used_amount.ToString("0.00") TL</td>
+                <td>
+                    @string.Join(", ", o.order_items.Select(i => $"{i.product.product_name} x{i.quantity}"))
+                </td>
+                <td>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a asp-action="Details" asp-route-id="@o.order_id" class="btn btn-sm btn-outline-secondary">Detay</a>
+                        @if (isYonetici)
+                        {
+                            var statusOptions = o.status switch
+                            {
+                                "PENDING" => new[] { "PENDING", "PREPARING", "CANCELLED" },
+                                "PREPARING" => new[] { "PREPARING", "ON_THE_WAY", "CANCELLED" },
+                                "ON_THE_WAY" => new[] { "ON_THE_WAY", "DELIVERED", "CANCELLED" },
+                                _ => new[] { o.status }
+                            };
+                            var isLocked = o.status is "DELIVERED" or "CANCELLED";
+                            <form asp-action="UpdateStatus" asp-route-id="@o.order_id" method="post" class="d-flex gap-2">
+                                <select name="status" class="form-select form-select-sm" disabled="@isLocked">
+                                    @foreach (var statusOption in statusOptions)
+                                    {
+                                        if (statusOption == o.status)
+                                        {
+                                            <option selected>@statusOption</option>
+                                        }
+                                        else
+                                        {
+                                            <option>@statusOption</option>
+                                        }
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-outline-primary" disabled="@isLocked">Guncelle</button>
+                            </form>
+                            <form asp-action="Deactivate" asp-route-id="@o.order_id" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Pasif Yap</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Reorder" asp-route-id="@o.order_id" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-success">Tekrarla</button>
+                            </form>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

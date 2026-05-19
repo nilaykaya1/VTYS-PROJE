@@ -1,0 +1,42 @@
+@model IEnumerable<VTYS_PROJE.Models.product>
+@{
+    ViewData["Title"] = "Urunler";
+}
+
+<h2>Urunler</h2>
+@if (TempData["Success"] is string successMessage)
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+<a class="btn btn-primary mb-3" asp-action="Create">Yeni Urun</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Urun</th>
+            <th>Restoran</th>
+            <th>Kategori</th>
+            <th>Fiyat</th>
+            <th>Stok</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.product_name</td>
+                <td>@p.restaurant.restaurant_name</td>
+                <td>@p.category.category_name</td>
+                <td>@p.unit_price.ToString("0.00") TL</td>
+                <td>@p.stock_qty</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@p.product_id">Duzenle</a>
+                    <form asp-action="Deactivate" asp-route-id="@p.product_id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Pasif Yap</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,36 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<section class="hero-section mb-4">
+    <div class="hero-content">
+        <span class="hero-chip">LezzetJet</span>
+        <h1 class="hero-title">Lezzeti bir tikla kapina getir</h1>
+        <p class="hero-subtitle">Restoranlari kesfet, siparisini olustur, Askida Yemek ile dayanismanin parcasi ol.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-order" asp-controller="Restaurants" asp-action="Index">Restoranlari Kesfet</a>
+            <a class="btn btn-outline-light" asp-controller="AskidaYemek" asp-action="Donate">Askida Destek Ol</a>
+        </div>
+    </div>
+</section>
+
+<section class="row g-3">
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <h5>Hizli Siparis</h5>
+            <p class="mb-0">Menu secimini yap, siparisini saniyeler icinde olustur.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <h5>Canli Takip</h5>
+            <p class="mb-0">Siparis durumunu tek ekrandan takip et, guncellemeleri kacirma.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <h5>Askida Yemek</h5>
+            <p class="mb-0">Bagis havuzuna destek ver, ihtiyac sahiplerine ulasan iyilik zincirine katil.</p>
+        </div>
+    </div>
+</section>

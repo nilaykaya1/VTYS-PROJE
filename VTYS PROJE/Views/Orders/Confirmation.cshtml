@@ -1,0 +1,44 @@
+@model VTYS_PROJE.Models.order
+@{
+    ViewData["Title"] = "Siparis Onayi";
+}
+
+<div class="alert alert-success">
+    Siparisiniz basariyla olusturuldu.
+</div>
+
+<div class="feature-card mb-3">
+    <h4 class="mb-2">Siparis #@Model.order_id</h4>
+    <p class="mb-1"><strong>Restoran:</strong> @Model.restaurant.restaurant_name</p>
+    <p class="mb-1"><strong>Tarih:</strong> @Model.order_date.ToString("g")</p>
+    <p class="mb-1"><strong>Durum:</strong> @Model.status</p>
+    <p class="mb-0"><strong>Toplam:</strong> @Model.total_amount.ToString("0.00") TL</p>
+</div>
+
+<h5>Siparis Kalemleri</h5>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Urun</th>
+            <th>Adet</th>
+            <th>Birim Fiyat</th>
+            <th>Tutar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.order_items)
+        {
+            <tr>
+                <td>@item.product.product_name</td>
+                <td>@item.quantity</td>
+                <td>@item.unit_price.ToString("0.00") TL</td>
+                <td>@((item.line_total ?? item.unit_price * item.quantity).ToString("0.00")) TL</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex gap-2">
+    <a asp-action="History" class="btn btn-primary">Siparislerime Git</a>
+    <a asp-action="Create" class="btn btn-outline-secondary">Yeni Siparis</a>
+</div>

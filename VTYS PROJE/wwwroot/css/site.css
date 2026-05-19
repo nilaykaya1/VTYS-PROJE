@@ -1,0 +1,152 @@
+:root {
+  --app-orange: #ff6b35;
+  --app-orange-dark: #e6511f;
+  --app-bg: #f6f7fb;
+  --app-text: #1f2937;
+  --app-muted: #6b7280;
+  --app-card: #ffffff;
+}
+
+html {
+  font-size: 15px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (min-width: 992px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  background: linear-gradient(180deg, #fff8f5 0%, var(--app-bg) 220px);
+  color: var(--app-text);
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.app-navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.app-brand {
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #111827 !important;
+}
+
+.brand-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--app-orange), #ff8a5b);
+  color: #fff;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.5rem;
+  margin-right: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.nav-link {
+  color: #374151 !important;
+  font-weight: 500;
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.7rem !important;
+}
+
+.nav-link:hover {
+  background: #fff1eb;
+  color: var(--app-orange-dark) !important;
+}
+
+.btn-order {
+  background: linear-gradient(135deg, var(--app-orange), #ff8a5b);
+  color: #fff;
+  border: none;
+  border-radius: 0.7rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+}
+
+.btn-order:hover {
+  background: linear-gradient(135deg, var(--app-orange-dark), #f97316);
+  color: #fff;
+}
+
+.hero-section {
+  background:
+    radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0) 36%),
+    linear-gradient(135deg, #ff6b35 0%, #ff8f5b 55%, #ffae87 100%);
+  color: #fff;
+  border-radius: 1.2rem;
+  padding: 2.2rem;
+  box-shadow: 0 14px 30px rgba(255, 107, 53, 0.24);
+}
+
+.hero-chip {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.hero-title {
+  margin-top: 0.95rem;
+  margin-bottom: 0.8rem;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.hero-subtitle {
+  max-width: 760px;
+  font-size: 1.1rem;
+  opacity: 0.95;
+}
+
+.feature-card {
+  background: var(--app-card);
+  border: 1px solid #eceef3;
+  border-radius: 1rem;
+  padding: 1.1rem;
+  box-shadow: 0 8px 20px rgba(10, 24, 40, 0.05);
+}
+
+.feature-card h5 {
+  margin-bottom: 0.45rem;
+}
+
+.card,
+.table,
+form {
+  border-radius: 0.9rem;
+}
+
+.card {
+  border: 1px solid #eceef3;
+  box-shadow: 0 8px 20px rgba(10, 24, 40, 0.05);
+}
+
+.table {
+  background: #fff;
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.7rem;
+  border-color: #dbe1ea;
+}
+
+.form-control:focus,
+.form-select:focus,
+.btn:focus,
+.btn:active:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.2);
+  border-color: #ffb193;
+}
+
+.app-footer {
+  background: #fff;
+  margin-top: 2rem;
+}

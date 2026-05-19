@@ -1,0 +1,65 @@
+@model VTYS_PROJE.Models.order
+@{
+    ViewData["Title"] = "Siparis Detayi";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Siparis #@Model.order_id</h2>
+    <span class="badge bg-secondary">@Model.status</span>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="feature-card h-100">
+            <h5>Temel Bilgiler</h5>
+            <p class="mb-1"><strong>Musteri:</strong> @Model.customer.full_name</p>
+            <p class="mb-1"><strong>Restoran:</strong> @Model.restaurant.restaurant_name</p>
+            <p class="mb-1"><strong>Kurye:</strong> @(Model.courier?.full_name ?? "Atanmadi")</p>
+            <p class="mb-0"><strong>Tarih:</strong> @Model.order_date.ToString("g")</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="feature-card h-100">
+            <h5>Tutar Bilgileri</h5>
+            <p class="mb-1"><strong>Toplam:</strong> @Model.total_amount.ToString("0.00") TL</p>
+            <p class="mb-1"><strong>Askida Kullanilan:</strong> @Model.askida_used_amount.ToString("0.00") TL</p>
+            <p class="mb-0"><strong>Odeme Tipi:</strong> @Model.payment_method</p>
+        </div>
+    </div>
+</div>
+
+<div class="feature-card mb-3">
+    <h5>Teslimat Adresi</h5>
+    <p class="mb-0">@Model.delivery_address</p>
+</div>
+
+<h5>Urunler</h5>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Urun</th>
+            <th>Adet</th>
+            <th>Birim Fiyat</th>
+            <th>Satir Toplami</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.order_items)
+        {
+            <tr>
+                <td>@item.product.product_name</td>
+                <td>@item.quantity</td>
+                <td>@item.unit_price.ToString("0.00") TL</td>
+                <td>@((item.line_total ?? item.unit_price * item.quantity).ToString("0.00")) TL</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.askida_redemption is not null)
+{
+    <div class="alert alert-info">
+        Bu sipariste Askida Yemek kullanim kaydi vardir.
+        Kullanilan tutar: <strong>@Model.askida_redemption.amount_used.ToString("0.00") TL</strong>
+    </div>
+}
