@@ -1,0 +1,56 @@
+﻿@model VTYS_PROJE.Models.customer_card
+
+@{
+    ViewData["Title"] = "Yeni Kart Ekle";
+}
+
+<h2>Yeni Kart Ekle</h2>
+
+<form asp-action="Create" method="post" class="row g-3">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="col-md-6">
+        <label asp-for="customer_id" class="form-label">Müşteri ID</label>
+        <input asp-for="customer_id" class="form-control" />
+        <span asp-validation-for="customer_id" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="card_holder_name" class="form-label">Kart Üzerindeki İsim</label>
+        <input asp-for="card_holder_name" class="form-control" />
+        <span asp-validation-for="card_holder_name" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="card_number" class="form-label">Kart Numarası</label>
+        <input asp-for="card_number" class="form-control" maxlength="16" />
+        <span asp-validation-for="card_number" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="expiry_month" class="form-label">Ay</label>
+        <input asp-for="expiry_month" class="form-control" min="1" max="12" />
+        <span asp-validation-for="expiry_month" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="expiry_year" class="form-label">Yıl</label>
+        <input asp-for="expiry_year" class="form-control" min="2026" max="2040" />
+        <span asp-validation-for="expiry_year" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="cvv" class="form-label">CVV</label>
+        <input asp-for="cvv" class="form-control" maxlength="4" />
+        <span asp-validation-for="cvv" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+        <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

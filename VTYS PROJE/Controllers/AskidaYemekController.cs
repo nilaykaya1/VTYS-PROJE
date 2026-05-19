@@ -83,6 +83,7 @@ public class AskidaYemekController : Controller
         {
             await PopulateCustomers(model);
             ViewBag.PoolBalance = await GetPoolBalance();
+            ViewBag.LockedToSessionCustomer = activeCustomerId > 0;
             return View(model);
         }
 
@@ -100,26 +101,51 @@ public class AskidaYemekController : Controller
             await _context.SaveChangesAsync();
         }
 
+        int? mealCount = null;
+        if (model.DonationType == "Meal")
+        {
+            mealCount = model.MealCount.HasValue && model.MealCount.Value > 0
+                ? model.MealCount.Value
+                : 1;
+        }
+
         _context.askida_donations.Add(new askida_donation
         {
             pool_id = pool.pool_id,
             donor_customer_id = model.CustomerId,
             donation_type = model.DonationType,
+            meal_count = mealCount,
             amount = model.Amount,
             is_anonymous = model.IsAnonymous,
             note = model.Note,
             created_at = DateTime.Now
         });
 
-        await _context.SaveChangesAsync();
-        TempData["Success"] = "Bagisiniz alindi.";
+        pool.current_balance += model.Amount;
+        pool.total_donated_balance += model.Amount;
+        pool.updated_at = DateTime.Now;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = ex.InnerException?.Message ?? ex.Message;
+            await PopulateCustomers(model);
+            ViewBag.PoolBalance = await GetPoolBalance();
+            ViewBag.LockedToSessionCustomer = activeCustomerId > 0;
+            return View(model);
+        }
+
+        TempData["Success"] = "Bağışınız alındı.";
         return RedirectToAction(nameof(Donate));
     }
 
     private async Task PopulateCustomers(AskidaYemekDonateViewModel vm)
     {
         vm.Customers = await _context.customers
-            .Where(c => c.is_active)
+            .Where(x => x.is_active == true)
             .OrderBy(c => c.full_name)
             .Select(c => new SelectListItem(c.full_name, c.customer_id.ToString()))
             .ToListAsync();

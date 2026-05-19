@@ -52,7 +52,7 @@ public class AccountController : Controller
 
         var email = model.Email.Trim().ToLowerInvariant();
         var customer = await _context.customers
-            .FirstOrDefaultAsync(c => c.email == email && c.is_active);
+            .FirstOrDefaultAsync(c => c.email == email && c.is_active == true);
 
         if (customer is null || !_passwordService.VerifyPassword(model.Password, customer.password_hash))
         {

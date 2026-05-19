@@ -1,37 +1,37 @@
 @model VTYS_PROJE.Models.customer
 @{
-    ViewData["Title"] = "Yeni Musteri";
+    ViewData["Title"] = "Yeni Müşteri";
 }
 
-<h2>Yeni Musteri</h2>
+<h2>Yeni Müşteri</h2>
 <form asp-action="Create" method="post" class="row g-3">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="col-md-6">
-        <label asp-for="full_name" class="form-label"></label>
+        <label class="form-label">Ad Soyad</label>
         <input asp-for="full_name" class="form-control" data-input="letters" maxlength="120"
                pattern="@InputValidation.LettersOnlyPattern" title="@InputValidation.LettersOnlyMessage" />
         <span asp-validation-for="full_name" class="text-danger"></span>
     </div>
     <div class="col-md-6">
-        <label asp-for="email" class="form-label"></label>
+        <label class="form-label">E-posta</label>
         <input asp-for="email" type="email" class="form-control"
                pattern="@InputValidation.EmailPattern" title="@InputValidation.EmailMessage" />
         <span asp-validation-for="email" class="text-danger"></span>
     </div>
     <div class="col-md-6">
-        <label asp-for="phone" class="form-label"></label>
+        <label class="form-label">Telefon</label>
         <input asp-for="phone" class="form-control" data-input="phone" maxlength="11" inputmode="numeric"
                pattern="@InputValidation.PhonePattern" title="@InputValidation.PhoneMessage" placeholder="05xxxxxxxxx" />
         <span asp-validation-for="phone" class="text-danger"></span>
     </div>
     <div class="col-md-6">
-        <label asp-for="password_hash" class="form-label">Sifre</label>
+        <label class="form-label">Şifre</label>
         <input asp-for="password_hash" type="password" class="form-control" minlength="8" />
         <span asp-validation-for="password_hash" class="text-danger"></span>
     </div>
     <div class="col-12 form-check">
         <input asp-for="is_beneficiary_verified" class="form-check-input" />
-        <label asp-for="is_beneficiary_verified" class="form-check-label"></label>
+        <label class="form-check-label">Askıda Yemek Yararlanıcısı</label>
     </div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary">Kaydet</button>

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<VTYS_PROJE.Models.customer_card>
+
+@{
+    ViewData["Title"] = "Kart Bilgileri";
+}
+
+<h2>Kart Bilgileri</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Yeni Kart Ekle</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Müşteri</th>
+            <th>Kart Sahibi</th>
+            <th>Kart Numarası</th>
+            <th>Son Kullanma</th>
+            <th>CVV</th>
+            <th>Eklenme Tarihi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.customer?.full_name</td>
+                <td>@item.card_holder_name</td>
+                <td>@item.card_number</td>
+                <td>@item.expiry_month / @item.expiry_year</td>
+                <td>@item.cvv</td>
+                <td>@item.created_at.ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -22,7 +22,12 @@ public class CustomersController : Controller
 
     public async Task<IActionResult> Index()
     {
-        return View(await _context.customers.Where(c => c.is_active).ToListAsync());
+        var customers = await _context.customers
+            .Where(c => c.is_active == true)
+            .OrderBy(c => c.full_name)
+            .ToListAsync();
+
+        return View(customers);
     }
 
     public IActionResult Create()
@@ -50,21 +55,22 @@ public class CustomersController : Controller
         {
             _context.customers.Add(model);
             await _context.SaveChangesAsync();
-            TempData["Success"] = "Musteri eklendi.";
+
+            TempData["Success"] = "Müşteri eklendi.";
+            return RedirectToAction(nameof(Index));
         }
         catch
         {
-            ModelState.AddModelError(string.Empty, "Kayit sirasinda hata olustu. E-posta veya telefon zaten kayitli olabilir.");
+            ModelState.AddModelError(string.Empty, "Kayıt sırasında hata oluştu. E-posta veya telefon zaten kayıtlı olabilir.");
             return View(model);
         }
-
-        return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Edit(long id)
     {
         var customer = await _context.customers.FindAsync(id);
-        if (customer is null || !customer.is_active)
+
+        if (customer == null || customer.is_active != true)
         {
             return NotFound();
         }
@@ -95,19 +101,21 @@ public class CustomersController : Controller
             model.password_hash = _passwordService.HashPassword(model.password_hash);
         }
 
+        model.is_active = true;
+
         try
         {
-            _context.Update(model);
+            _context.customers.Update(model);
             await _context.SaveChangesAsync();
-            TempData["Success"] = "Musteri guncellendi.";
+
+            TempData["Success"] = "Müşteri güncellendi.";
+            return RedirectToAction(nameof(Index));
         }
         catch
         {
-            ModelState.AddModelError(string.Empty, "Guncelleme sirasinda hata olustu.");
+            ModelState.AddModelError(string.Empty, "Güncelleme sırasında hata oluştu.");
             return View(model);
         }
-
-        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
@@ -115,14 +123,16 @@ public class CustomersController : Controller
     public async Task<IActionResult> Deactivate(long id)
     {
         var customer = await _context.customers.FindAsync(id);
-        if (customer is null)
+
+        if (customer == null)
         {
             return NotFound();
         }
 
         customer.is_active = false;
         await _context.SaveChangesAsync();
-        TempData["Success"] = "Musteri pasife alindi.";
+
+        TempData["Success"] = "Müşteri pasife alındı.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -133,7 +143,7 @@ public class CustomersController : Controller
             string.IsNullOrWhiteSpace(model.phone) ||
             string.IsNullOrWhiteSpace(model.password_hash))
         {
-            ModelState.AddModelError(string.Empty, "Ad, e-posta, telefon ve sifre alani zorunludur.");
+            ModelState.AddModelError(string.Empty, "Ad, e-posta, telefon ve şifre alanı zorunludur.");
             return false;
         }
 

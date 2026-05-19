@@ -35,6 +35,8 @@ public class OrderCreateViewModel
     public List<OrderCartItemViewModel> CartItems { get; set; } = new();
 
     public decimal CartSubtotal { get; set; }
+   
+    public bool UseAskida { get; set; }
 
     public List<SelectListItem> Customers { get; set; } = new();
     public List<SelectListItem> Restaurants { get; set; } = new();

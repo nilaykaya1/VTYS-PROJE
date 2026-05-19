@@ -7,38 +7,45 @@
 
 <form asp-action="Create" method="post" class="row g-3">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <div class="col-md-6">
-        <label asp-for="restaurant_name" class="form-label"></label>
+        <label asp-for="restaurant_name" class="form-label">Restoran Adı</label>
         <input asp-for="restaurant_name" class="form-control" data-input="letters" maxlength="120"
                pattern="@InputValidation.LettersOnlyPattern" title="@InputValidation.LettersOnlyMessage" />
         <span asp-validation-for="restaurant_name" class="text-danger"></span>
     </div>
+
     <div class="col-md-6">
-        <label asp-for="cuisine_type" class="form-label"></label>
+        <label asp-for="cuisine_type" class="form-label">Mutfak Türü</label>
         <input asp-for="cuisine_type" class="form-control" data-input="letters" maxlength="80"
                pattern="@InputValidation.LettersOnlyPattern" title="@InputValidation.LettersOnlyMessage" />
         <span asp-validation-for="cuisine_type" class="text-danger"></span>
     </div>
+
     <div class="col-md-6">
-        <label asp-for="email" class="form-label"></label>
+        <label asp-for="email" class="form-label">E-Posta</label>
         <input asp-for="email" type="email" class="form-control"
                pattern="@InputValidation.EmailPattern" title="@InputValidation.EmailMessage" />
         <span asp-validation-for="email" class="text-danger"></span>
     </div>
+
     <div class="col-md-6">
-        <label asp-for="phone" class="form-label"></label>
+        <label asp-for="phone" class="form-label">Telefon</label>
         <input asp-for="phone" class="form-control" data-input="phone" maxlength="11" inputmode="numeric"
                pattern="@InputValidation.PhonePattern" title="@InputValidation.PhoneMessage" />
         <span asp-validation-for="phone" class="text-danger"></span>
     </div>
+
     <div class="col-md-3">
-        <label asp-for="rating" class="form-label"></label>
+        <label asp-for="rating" class="form-label">Puan</label>
         <input asp-for="rating" class="form-control" />
     </div>
+
     <div class="col-md-3">
-        <label asp-for="total_revenue" class="form-label"></label>
+        <label asp-for="total_revenue" class="form-label">Toplam Gelir</label>
         <input asp-for="total_revenue" class="form-control" />
     </div>
+
     <div class="col-12">
         <button type="submit" class="btn btn-primary">Kaydet</button>
     </div>

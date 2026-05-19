@@ -22,6 +22,8 @@ public class AskidaYemekDonateViewModel
 
     [Display(Name = "Anonim Bagis")]
     public bool IsAnonymous { get; set; }
+   
+    public int? MealCount { get; set; }
 
     public List<SelectListItem> Customers { get; set; } = new();
 }
