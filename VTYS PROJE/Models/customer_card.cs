@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VTYS_PROJE.Models;
@@ -7,9 +6,9 @@ namespace VTYS_PROJE.Models;
 public class customer_card
 {
     [Key]
-    public int card_id { get; set; }
+    public long card_id { get; set; }
 
-    public int customer_id { get; set; }
+    public long customer_id { get; set; }
 
     [Required]
     [StringLength(120)]

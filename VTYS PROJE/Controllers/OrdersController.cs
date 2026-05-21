@@ -294,74 +294,85 @@ public class OrdersController : Controller
             }
         }
 
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        var strategy = _context.Database.CreateExecutionStrategy();
 
         try
         {
-            var order = new order
+            await strategy.ExecuteAsync(async () =>
             {
-                customer_id = model.CustomerId,
-                restaurant_id = model.RestaurantId,
-                courier_id = model.CourierId,
-                delivery_address = model.DeliveryAddress.Trim(),
-                order_date = DateTime.Now,
-                status = "PENDING",
-                payment_method = model.UseAskida ? "ASKIDA" : "CARD",
-                total_amount = cartTotal,
-                askida_used_amount = model.UseAskida ? cartTotal : 0m,
-                revenue_recognized = false,
-                is_active = true
-            };
+                await using var transaction = await _context.Database.BeginTransactionAsync();
 
-            _context.orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            foreach (var item in cart)
-            {
-                var product = dbProducts[item.ProductId];
-
-                var orderItem = new order_item
+                try
                 {
-                    order_id = order.order_id,
-                    product_id = product.product_id,
-                    quantity = item.Quantity,
-                    unit_price = product.unit_price
-                };
+                    var order = new order
+                    {
+                        customer_id = model.CustomerId,
+                        restaurant_id = model.RestaurantId,
+                        courier_id = model.CourierId,
+                        delivery_address = model.DeliveryAddress.Trim(),
+                        order_date = DateTime.Now,
+                        status = "PENDING",
+                        payment_method = model.UseAskida ? "ASKIDA" : "CARD",
+                        total_amount = cartTotal,
+                        askida_used_amount = model.UseAskida ? cartTotal : 0m,
+                        revenue_recognized = false,
+                        is_active = true
+                    };
 
-                _context.order_items.Add(orderItem);
-                product.stock_qty -= item.Quantity;
-            }
+                    _context.orders.Add(order);
+                    await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
+                    foreach (var item in cart)
+                    {
+                        var product = dbProducts[item.ProductId];
 
-            if (model.UseAskida)
-            {
-                var pool = await _context.askida_pools
-                    .OrderBy(p => p.pool_id)
-                    .FirstOrDefaultAsync();
+                        var orderItem = new order_item
+                        {
+                            order_id = order.order_id,
+                            product_id = product.product_id,
+                            quantity = item.Quantity,
+                            unit_price = product.unit_price
+                        };
 
-                if (pool == null || pool.current_balance < cartTotal)
+                        _context.order_items.Add(orderItem);
+                        product.stock_qty -= item.Quantity;
+                    }
+
+                    if (model.UseAskida)
+                    {
+                        var pool = await _context.askida_pools
+                            .OrderBy(p => p.pool_id)
+                            .FirstOrDefaultAsync();
+
+                        if (pool == null || pool.current_balance < cartTotal)
+                            throw new Exception("Askıda yemek bakiyesi yetersiz.");
+
+                        pool.current_balance -= cartTotal;
+                        pool.total_used_balance += cartTotal;
+                        pool.updated_at = DateTime.Now;
+
+                        var redemption = new askida_redemption
+                        {
+                            pool_id = pool.pool_id,
+                            order_id = order.order_id,
+                            beneficiary_customer_id = model.CustomerId,
+                            amount_used = cartTotal,
+                            status = "COMPLETED",
+                            created_at = DateTime.Now
+                        };
+
+                        _context.askida_redemptions.Add(redemption);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch
                 {
                     await transaction.RollbackAsync();
-                    TempData["Error"] = "Askıda yemek bakiyesi yetersiz.";
-                    return RedirectToAction(nameof(Create));
+                    throw;
                 }
-
-                var redemption = new askida_redemption
-                {
-                    pool_id = pool.pool_id,
-                    order_id = order.order_id,
-                    beneficiary_customer_id = model.CustomerId,
-                    amount_used = cartTotal,
-                    status = "COMPLETED",
-                    created_at = DateTime.Now
-                };
-
-                _context.askida_redemptions.Add(redemption);
-                await _context.SaveChangesAsync();
-            }
-
-            await transaction.CommitAsync();
+            });
 
             HttpContext.Session.Remove(CartSessionKey);
             HttpContext.Session.Remove(CheckoutSessionKey);
@@ -371,7 +382,6 @@ public class OrdersController : Controller
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
             TempData["Error"] = ex.InnerException?.Message ?? ex.Message;
             return RedirectToAction(nameof(Create));
         }

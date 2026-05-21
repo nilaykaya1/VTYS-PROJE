@@ -1,57 +1,57 @@
-@model IEnumerable<VTYS_PROJE.Models.product>
+@model List<VTYS_PROJE.Models.product>
+
 @{
-    ViewData["Title"] = "Menu";
-    var restaurantName = ViewBag.RestaurantName as string ?? "Restoran";
-    var restaurantId = (long?)ViewBag.RestaurantId;
+    ViewData["Title"] = "Menü";
+    var restaurantId = ViewBag.RestaurantId;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-    <div>
-        <h2 class="mb-0">@restaurantName - Menu</h2>
-        <p class="text-muted mb-0">
-            Bu restorana ait yemekler
-            @if (ViewBag.RestaurantRating is decimal rt)
-            {
-                <span> | Ortalama puan: <strong>@rt.ToString("0.0")</strong>/5 (@ViewBag.ReviewCount yorum)</span>
-            }
-        </p>
+<div class="container mt-4">
+
+    <h2>@ViewBag.RestaurantName Menü</h2>
+
+    <div class="mb-3">
+        <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Tüm Restoranlar</a>
     </div>
-    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Tum Restoranlar</a>
-</div>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">Bu restoranda henuz urun yok.</div>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Urun</th>
-                <th>Kategori</th>
-                <th>Fiyat</th>
-                <th>Stok</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">Bu restoranda henüz ürün yok.</div>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>@item.product_name</td>
-                    <td>@item.category.category_name</td>
-                    <td>@item.unit_price.ToString("0.00") TL</td>
-                    <td>@item.stock_qty</td>
+                    <th>Ürün</th>
+                    <th>Kategori</th>
+                    <th>Fiyat</th>
+                    <th>Stok</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.product_name</td>
+                        <td>@(item.category?.category_name ?? "Kategori yok")</td>
+                        <td>@item.unit_price.ToString("0.00") TL</td>
+                        <td>@item.stock_qty</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 
-@if (restaurantId.HasValue)
-{
-    <a class="btn btn-order" asp-controller="Orders" asp-action="Create">Bu Restorandan Siparis Ver</a>
-}
+    @if (restaurantId != null)
+    {
+        <a class="btn btn-primary"
+               asp-controller="Orders"
+               asp-action="Create">
+            Sipariş Ver
+        </a>
+    }
 
-<partial name="_RestaurantReviews" />
-<partial name="_MenuYonetimRehberi" />
+    <partial name="_RestaurantReviews" />
+    <partial name="_MenuYonetimRehberi" />
+
+</div>

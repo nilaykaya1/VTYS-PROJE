@@ -17,7 +17,8 @@ public class MenuController : Controller
 
     public async Task<IActionResult> Index(long? restaurantId)
     {
-        ViewBag.IsYonetici = HttpContext.Session.GetString(AuthSessionKeys.Role) == AuthSessionKeys.RoleAdmin;
+        ViewBag.IsYonetici =
+            HttpContext.Session.GetString(AuthSessionKeys.Role) == AuthSessionKeys.RoleAdmin;
 
         if (!restaurantId.HasValue || restaurantId.Value <= 0)
         {
@@ -30,7 +31,9 @@ public class MenuController : Controller
         }
 
         var restaurant = await _context.restaurants
-            .FirstOrDefaultAsync(r => r.restaurant_id == restaurantId.Value && r.is_active);
+            .FirstOrDefaultAsync(r =>
+                r.restaurant_id == restaurantId.Value &&
+                r.is_active);
 
         if (restaurant is null)
         {
@@ -39,26 +42,38 @@ public class MenuController : Controller
         }
 
         var products = await _context.products
-            .Include(p => p.category)
-            .Where(p => p.restaurant_id == restaurantId.Value && p.is_active)
+            .Where(p =>
+                p.restaurant_id == restaurantId.Value &&
+                p.is_active)
             .OrderBy(p => p.product_name)
             .ToListAsync();
 
         List<restaurant_review> reviews;
+
         if (await ReviewTableHelper.TableExistsAsync(_context))
         {
-            reviews = await ReviewTableHelper.LoadReviewsAsync(_context, restaurantId.Value);
+            reviews = await ReviewTableHelper.LoadReviewsAsync(
+                _context,
+                restaurantId.Value);
         }
         else
         {
             reviews = [];
+
             TempData["Error"] =
-                "Puan/yorum tablosu (restaurant_reviews) veritabaninda yok. SSMS'te Database/Scripts/03_Puanlama_Yorum.sql dosyasini calistirin.";
+                "Puan/yorum tablosu (restaurant_reviews) veritabaninda yok.";
         }
 
-        var isCustomer = HttpContext.Session.GetString(AuthSessionKeys.Role) == AuthSessionKeys.RoleCustomer;
+        var isCustomer =
+            HttpContext.Session.GetString(AuthSessionKeys.Role) ==
+            AuthSessionKeys.RoleCustomer;
+
         long customerId = 0;
-        if (isCustomer && long.TryParse(HttpContext.Session.GetString(AuthSessionKeys.CustomerId), out var cid))
+
+        if (isCustomer &&
+            long.TryParse(
+                HttpContext.Session.GetString(AuthSessionKeys.CustomerId),
+                out var cid))
         {
             customerId = cid;
         }
@@ -69,7 +84,11 @@ public class MenuController : Controller
         ViewBag.Reviews = reviews;
         ViewBag.ReviewCount = reviews.Count;
         ViewBag.IsCustomer = isCustomer;
-        ViewBag.CustomerHasReview = customerId > 0 && reviews.Any(r => r.customer_id == customerId);
+
+        ViewBag.CustomerHasReview =
+            customerId > 0 &&
+            reviews.Any(r => r.customer_id == customerId);
+
         return View(products);
     }
 }
